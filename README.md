@@ -102,11 +102,14 @@ O diagrama de sequência demonstra o fluxo de execução comportamental quando a
 sequenceDiagram
     autonumber
     actor Cliente as Main
-    participant Rel as relatorioVendas: RelatorioVendas
     participant Exp as exportadorPDF: ExportadorPDF
+    participant Rel as relatorioVendas: RelatorioVendas
 
-    Main->>Rel: RelatorioVendas(exportadorPDF)
-    Note right of Main: Injeção de Dependência (Bridge)
+    Main->>Exp: new ExportadorPDF()
+    Note right of Main: 1. Cliente instancia a implementação escolhida
+
+    Main->>Rel: new RelatorioVendas(exportadorPDF)
+    Note right of Main: 2. Cliente injeta o exportador na abstração (Bridge)
     
     Main->>Rel: gerarRelatorio()
     activate Rel
