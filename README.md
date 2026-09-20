@@ -1,5 +1,5 @@
 # Padrão Bridge: Aplicado ao caso de emissão de relatórios
-> **Alunas:** Ana Beatriz Novais Pereira || Isabelle Gomes de Souza Andrade
+> **Alunas:** Ana Beatriz Novais Pereira || Isabelle Gomes de Souza Andrade 
 
 Usamos o padrão Bridge, que faz parte do grupo de padrões estruturais, para solucionar o seguinte problema:
 
