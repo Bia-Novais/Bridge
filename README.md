@@ -74,29 +74,31 @@ classDiagram
 
     %% Relacionamento Bridge (Agregação)
     Relatorio o--> FormatoExportacao : usa
+```
 
 
 **Detalhes do Diagrama de Classes:**
 
--- Lado da Abstração:
+* Lado da Abstração:
 
    -> Relatorio (Classe Abstrata): Mantém a referência protegida (exportador) para a interface de exportação.
 
    -> RelatorioVendas e RelatorioRH (Classes Concretas): Especializam a lógica de negócios de cada tipo de relatório.
 
--- Lado da Implementação:
+* Lado da Implementação:
 
    -> FormatoExportacao (Interface): Define os métodos padrão de renderização.
 
    -> ExportadorPDF, ExportadorExcel e ExportadorHTML (Classes Concretas): Implementam a lógica específica de geração de arquivos para cada formato.
 
--- Relacionamento Bridge: A Agregação (o-->) entre Relatorio e FormatoExportacao forma a ponte, permitindo injetar qualquer exportador em tempo de execução.
+* Relacionamento Bridge: A Agregação (o-->) entre Relatório e FormatoExportacao forma a ponte, permitindo injetar qualquer exportador em tempo de execução.
 
 ---
 
 ## Diagrama de Sequência
 O diagrama de sequência demonstra o fluxo de execução comportamental quando a classe cliente (Main) instancia um relatório de vendas, injeta um exportador PDF e solicita a geração.
 
+```mermaid
 sequenceDiagram
     autonumber
     actor Cliente as Main
@@ -126,14 +128,15 @@ sequenceDiagram
     
     Rel-->>Main: Arquivo gerado com sucesso
     deactivate Rel
+```
 
 **Detalhes do Fluxo de Execução:**
 
---Instanciação: O cliente instancia o exportador concreto (ExportadorPDF) e o passa como parâmetro para o construtor da classe refinada (RelatorioVendas).
+* **Instanciação**: O cliente instancia o exportador concreto (ExportadorPDF) e o passa como parâmetro para o construtor da classe refinada (RelatorioVendas).
 
---Solicitação: O cliente chama o método gerarRelatorio() na abstração.
+* **Solicitação**: O cliente chama o método gerarRelatorio() na abstração.
 
---Delegação (A Ponte em ação): O RelatorioVendas processa seus dados específicos e delega as chamadas de renderização (desenharCabecalho, desenharCorpo, finalizarArquivo) para o objeto exportadorPDF injetado, mantendo a regra de negócio desacoplada da tecnologia de arquivo.
+* **Delegação (A Ponte em ação)**: O RelatorioVendas processa seus dados específicos e delega as chamadas de renderização (desenharCabecalho, desenharCorpo, finalizarArquivo) para o objeto exportadorPDF injetado, mantendo a regra de negócio desacoplada da tecnologia de arquivo.
 
 ---
     
