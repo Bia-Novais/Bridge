@@ -101,15 +101,14 @@ O diagrama de sequência demonstra o fluxo de execução comportamental quando a
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Cliente as Main
     participant Exp as exportadorPDF: ExportadorPDF
     participant Rel as relatorioVendas: RelatorioVendas
 
     Main->>Exp: new ExportadorPDF()
-    Note right of Main: 1. Cliente instancia a implementação escolhida
+    Note right of Main: 1. Main instancia a implementação escolhida
 
     Main->>Rel: new RelatorioVendas(exportadorPDF)
-    Note right of Main: 2. Cliente injeta o exportador na abstração (Bridge)
+    Note right of Main: 2. Main injeta o exportador na abstração (Bridge)
     
     Main->>Rel: gerarRelatorio()
     activate Rel
