@@ -1,95 +1,71 @@
-# Bridge
-Padrão de modelagem de projetos Bridge
+# Padrão Bridge: Aplicado ao caso de emissão de relatórios
 
-@startuml
-skinparam classAttributeIconSize 0
+Usamos o padrão Bridge, que faz parte do grupo de padrões estruturais, para solucionar o seguinte problema:
 
-' Lado da Implementação (Implementor)
-interface FormatoExportacao {
-    + desenharCabecalho(titulo: String): void
-    + desenharCorpo(dados: List<String>): void
-    + finalizarArquivo(): void
-}
+A equipe de engenharia de um sistema de inteligência de negócios TechFatec precisa expandir o módulo de relatórios. O sistema legado gera exclusivamente o "Relatório de Vendas" no formato "PDF". O novo requisito exige a inclusão do "Relatório de Desempenho de RH", estipulando que todos os relatórios (atuais e futuros) devem ser exportáveis para PDF, Excel (XLSX) e HTML. A diretriz arquitetural requer a aplicação do Padrão Bridge para prevenir a explosão de subclasses e aderir ao Princípio Aberto/Fechado do SOLID. 
 
-class ExportadorPDF {
-    + desenharCabecalho(titulo: String): void
-    + desenharCorpo(dados: List<String>): void
-    + finalizarArquivo(): void
-}
+Esse padrão se torna muito útil a partir do momento em que separamos o **"o que"** do **"como"**. 
 
-class ExportadorExcel {
-    + desenharCabecalho(titulo: String): void
-    + desenharCorpo(dados: List<String>): void
-    + finalizarArquivo(): void
-}
+A criação de relatórios é a nossa regra de negócio, a **parte abstrata**, onde podem surgir novas formatações de conteúdo. Já o formato em que o arquivo deve sair é a nossa **parte de implementação**. 
 
-class ExportadorHTML {
-    + desenharCabecalho(titulo: String): void
-    + desenharCorpo(dados: List<String>): void
-    + finalizarArquivo(): void
-}
+Com isso definido, elaboramos nosso diagrama de classes e de sequência para mapear visualmente a aplicação antes de codificar a solução.
 
-FormatoExportacao <|.. ExportadorPDF
-FormatoExportacao <|.. ExportadorExcel
-FormatoExportacao <|.. ExportadorHTML
+## Diagrama de Classes
 
-' Lado da Abstração (Abstraction)
-abstract class Relatorio {
-    # exportador: FormatoExportacao
-    + Relatorio(exportador: FormatoExportacao)
-    + {abstract} gerarRelatorio(): void
-}
+Este diagrama representa bem a separação entre a Abstração (nosso "o que") e a Implementação (nosso "como").
 
-class RelatorioVendas {
-    + RelatorioVendas(exportador: FormatoExportacao)
-    + gerarRelatorio(): void
-}
+```mermaid
+classDiagram
+    %% Lado da Implementação (Implementor)
+    class FormatoExportacao {
+        <<interface>>
+        +desenharCabecalho(titulo: String)
+        +desenharCorpo(dados: List~String~)
+        +finalizarArquivo()
+    }
 
-class RelatorioRH {
-    + RelatorioRH(exportador: FormatoExportacao)
-    + gerarRelatorio(): void
-}
+    class ExportadorPDF {
+        +desenharCabecalho(titulo: String)
+        +desenharCorpo(dados: List~String~)
+        +finalizarArquivo()
+    }
 
-Relatorio <|-- RelatorioVendas
-Relatorio <|-- RelatorioRH
+    class ExportadorExcel {
+        +desenharCabecalho(titulo: String)
+        +desenharCorpo(dados: List~String~)
+        +finalizarArquivo()
+    }
 
-' Relacionamento Bridge (Agregação/Associação)
-Relatorio o--> FormatoExportacao : usa >
+    class ExportadorHTML {
+        +desenharCabecalho(titulo: String)
+        +desenharCorpo(dados: List~String~)
+        +finalizarArquivo()
+    }
 
-@enduml
+    FormatoExportacao <|.. ExportadorPDF
+    FormatoExportacao <|.. ExportadorExcel
+    FormatoExportacao <|.. ExportadorHTML
 
-Detalhes do Diagrama de Classes:
+    %% Lado da Abstração (Abstraction)
+    class Relatorio {
+        <<abstract>>
+        #exportador: FormatoExportacao
+        +Relatorio(exportador: FormatoExportacao)
+        +gerarRelatorio()*
+    }
 
-Diagrama de Sequência
+    class RelatorioVendas {
+        +RelatorioVendas(exportador: FormatoExportacao)
+        +gerarRelatorio()
+    }
 
-@startuml
-autonumber
-actor Cliente as Main
-participant "relatorioVendas:\nRelatorioVendas" as Rel
-participant "exportadorPDF:\nExportadorPDF" as Exp
+    class RelatorioRH {
+        +RelatorioRH(exportador: FormatoExportacao)
+        +gerarRelatorio()
+    }
 
-Main -> Rel : RelatorioVendas(exportadorPDF)
-note right: Injeção de Dependência (Bridge)
+    Relatorio <|-- RelatorioVendas
+    Relatorio <|-- RelatorioRH
 
-Main -> Rel : gerarRelatorio()
-activate Rel
-
-Rel -> Exp : desenharCabecalho("Relatório de Vendas")
-activate Exp
-Exp --> Rel : ok
-deactivate Exp
-
-Rel -> Exp : desenharCorpo(dadosVendas)
-activate Exp
-Exp --> Rel : ok
-deactivate Exp
-
-Rel -> Exp : finalizarArquivo()
-activate Exp
-Exp --> Rel : ok
-deactivate Exp
-
-Rel --> Main : Arquivo gerado com sucesso
-deactivate Rel
-
-@enduml
+    %% Relacionamento Bridge (Agregação)
+    Relatorio o--> FormatoExportacao : usa
